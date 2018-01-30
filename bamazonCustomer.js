@@ -10,7 +10,7 @@ var connection = mysql.createConnection({
   user: "root",
 
   // Your password
-  password: "Swampy33",
+  password: "boop",
   database: "bamazon"
 });
 
