@@ -17,25 +17,23 @@ var connection = mysql.createConnection({
 // connect to the mysql server and sql database
 connection.connect(function(err) {
   if (err) throw err;
-  // run the start function after the connection is made to prompt the user
+  // run the displayProducts function after the connection is made to prompt the user
   displayProducts();
 });
 
-// function which prompts the user for what action they should take
+// function displays product to purchase
 function displayProducts() {
   connection.query("SELECT * FROM products", function (err, res) {
   if (err) throw err;
   for (var i = 0; i < res.length; i++) {
     console.log(res[i].item_id + "  " + res[i].product_name + "  " + "$" + parseFloat(res[i].price).toFixed(2) );
   }
-    connection.end(); 
     makePurchase();
   }) 
 }
 
-// function which prompts the user for what action they should take
+// function lets user choose product and quantity for purchase
 function makePurchase() {
-  // prompt for info about the item being put up for auction
   inquirer
     .prompt([
       {
@@ -43,10 +41,8 @@ function makePurchase() {
         type: "input",
         message: "What is the ID of the product you'd like to buy?",
         validate: function(value) {
-          if (isNaN(value) === false) {
-            return true;
-          }
-          return false;
+          if (isNaN(value) === false) {return true;
+          } return false;
         }
       },
       {
@@ -54,21 +50,22 @@ function makePurchase() {
         type: "input",
         message: "How many units would you like?",
         validate: function(value) {
-          if (isNaN(value) === false) {
-            return true;
-          }
-          return false;
+         if (isNaN(value) === false) {return true;
+          } return false;
         }
       }
      ])
     .then(function(answer) {
 
       //var itemSelected = answer.productId;
-      connection.query("SELECT stock_quantity FROM products WHERE item_id = answer.productId", function (err, res) {
-        console.log(answer.productId);
-       //if (err) throw err;
+      //console.log(answer.productId);
+      var query = "SELECT * FROM products WHERE ?";
+      connection.query(query, { item_id: answer.productId }, function(err, res) {
+       if (err) throw err;
+
        var currentStock = res.stock_quantity;
-       var quantityWanted = res.quantityOfItem;
+       var productCost = res.price;
+       var quantityWanted = answer.quantityOfItem;
 
        if (currentStock < quantityWanted) {
           console.log("Insufficient quantity! Choose another item?")
@@ -88,37 +85,14 @@ function makePurchase() {
             ],
             function(error) {
               if (error) throw err;
-              console.log("Order placed!");
-              displayProducts();
             }
+
           ); 
+          console.log("Order placed!");
+          console.log("Order total: $" + (productCost * quantityWanted) );
+              return;
+              //displayProducts();
        }
-       
-
-       //deductFromStock(itemSelected);
-       //connection.end(); 
-       //displayProducts();
        }) //end query
-
-    });
-}
-
-//var deductFromStock = function() {
-  //console.log("function deductFromStock");
-  // var query = connection.query(
-  //   "UPDATE products SET ? WHERE ?",
-  //   [
-  //     {
-  //       quantity: 100
-  //     },
-  //     {
-  //       flavor: "Rocky Road"
-  //     }
-  //   ],
-  //   function(err, res) {
-  //     console.log(res.affectedRows + " products updated!\n");
-  //     // Call deleteProduct AFTER the UPDATE completes
-  //     deleteProduct();
-  //   }
-  //);
-//}
+}); // end inquirer response
+}; // end function makePurchase
