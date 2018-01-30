@@ -52,9 +52,9 @@ var managerCommands = function() {
           addNewProduct();
           break;
 
-       default
+       default:
           console.log("not an option");
-          break;
+          
       }
     });
 }
@@ -64,7 +64,7 @@ function viewAllProducts() {
   connection.query("SELECT * FROM products", function (err, res) {
   if (err) throw err;
   for (var i = 0; i < res.length; i++) {
-    console.log(res[i].item_id + "  " + res[i].product_name + "  " + "$" + parseFloat(res[i].price).toFixed(2) );
+    console.log(res[i].item_id + "  " + res[i].product_name + "  " + "$" + parseFloat(res[i].price).toFixed(2));
   }
     managerCommands();
   }) 
@@ -73,7 +73,13 @@ function viewAllProducts() {
 function viewLowInventory() {
   connection.query("SELECT * FROM products", function (err, res) {
   if (err) throw err;
-  
+  console.log("\n===========LOW INVENTORY===========\n")
+  for (var i = 0; i < res.length; i++) {
+    if (res.stock_quantity < 5) {
+      console.log(res[i].item_id + "  " + res[i].product_name);
+    }
+   }
+     managerCommands();  
   }) 
 }
 
