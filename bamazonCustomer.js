@@ -58,14 +58,18 @@ function makePurchase() {
     .then(function(answer) {
 
       //var itemSelected = answer.productId;
-      //console.log(answer.productId);
-      var query = "SELECT * FROM products WHERE ?";
+      console.log(answer.productId);
+      var query = "SELECT stock_quantity, price FROM products WHERE ?";
       connection.query(query, { item_id: answer.productId }, function(err, res) {
        if (err) throw err;
 
        var currentStock = res.stock_quantity;
        var productCost = res.price;
        var quantityWanted = answer.quantityOfItem;
+        console.log(currentStock);
+        console.log(productCost);
+        console.log(quantityWanted);
+
 
        if (currentStock < quantityWanted) {
           console.log("Insufficient quantity! Choose another item?")
