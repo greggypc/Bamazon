@@ -52,6 +52,7 @@ function makePurchase() {
         validate: function(value) {
          if (isNaN(value) === false) {return true;
           } return false;
+
         }
       }
      ])
@@ -62,16 +63,13 @@ function makePurchase() {
       var query = "SELECT stock_quantity, price FROM products WHERE ?";
       connection.query(query, { item_id: answer.productId }, function(err, res) {
        if (err) throw err;
-
-       var currentStock = res.stock_quantity;
-       var productCost = res.price;
+       //var currentStock = res.stock_quantity;
+       //var productCost = res.price;
        var quantityWanted = answer.quantityOfItem;
-        console.log(currentStock);
-        console.log(productCost);
-        console.log(quantityWanted);
-
-
-       if (currentStock < quantityWanted) {
+       console.log(res);
+        for (var i = 0; i < res.length; i++) {
+                    console.log("Position: " + res[i].stock_quantity + " || Song: " + res[i].price);
+                     if (res[i].stock_quantity < answer.quantityOfItem) {
           console.log("Insufficient quantity! Choose another item?")
           displayProducts();
        }else {
@@ -97,6 +95,22 @@ function makePurchase() {
               return;
               //displayProducts();
        }
+        }
+
+//         let currentStock = product.filter((product) => {
+//     return product.stock_quantity && product.price;
+// })
+
+
+       // var currentStock = res.stock_quantity;
+       // var productCost = res.price;
+       // var quantityWanted = answer.quantityOfItem;
+        console.log(currentStock);
+        console.log(productCost);
+        console.log(quantityWanted);
+
+
+      
        }) //end query
 }); // end inquirer response
 }; // end function makePurchase

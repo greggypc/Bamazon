@@ -25,6 +25,7 @@ var managerCommands = function() {
   inquirer
     .prompt({
       name: "action",
+
       type: "rawlist",
       message: "What would you like to do?",
       choices: [
