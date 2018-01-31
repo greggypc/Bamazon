@@ -10,7 +10,7 @@ var connection = mysql.createConnection({
   user: "root",
 
   // Your password
-  password: "boop",
+  password: "",
   database: "bamazon"
 });
 
@@ -31,6 +31,20 @@ function displayProducts() {
     makePurchase();
   }) 
 }
+
+// function displays product to purchase
+// function displayProducts() {
+//   connection.query("SELECT * FROM products", function (err, res) {
+//   if (err) throw err;
+//   //console.log(res);
+
+//   var productList = res.map((prod) => prod);
+//   //for (var i = 0; i < res.length; i++) {
+//     console.log(productList.item_id + "  " + productList.product_name + "  " + "$" + parseFloat(productList.price).toFixed(2) );
+//   //}
+//     makePurchase();
+//   }) 
+// }
 
 // function lets user choose product and quantity for purchase
 function makePurchase() {
@@ -59,59 +73,53 @@ function makePurchase() {
     .then(function(answer) {
 
       //var itemSelected = answer.productId;
-      console.log(answer.productId);
+     // console.log(answer.productId);
       var query = "SELECT stock_quantity, price FROM products WHERE ?";
       connection.query(query, { item_id: answer.productId }, function(err, res) {
        if (err) throw err;
-       //var currentStock = res.stock_quantity;
-       //var productCost = res.price;
-       //var quantityWanted = answer.quantityOfItem;
+
+       //does the item_id exist?
+       if (!res[0]) {
+        console.log("\nProduct does not exist - choose another:\n" + "========================================\n");
+        displayProducts();
+        return;
+      }
+       
        //console.log(res);
 
         for (var i = 0; i < res.length; i++) {
-                    //console.log("Position: " + res[i].stock_quantity + " || Song: " + res[i].price);
-                     if (res[i].stock_quantity < answer.quantityOfItem) {
+          var currentStock = res[i].stock_quantity;
+          var productCost = res[i].price;
+          var quantityWanted = answer.quantityOfItem;
+          
+          if (currentStock < quantityWanted) {
           console.log("Insufficient quantity! Choose another item?")
           displayProducts();
-       }else {
-         console.log("Placing your order...\n");
-         res[i].stock_quantity -= answer.quantityOfItem;
-         connection.query(
-            "UPDATE products SET ? WHERE ?",
-            [
-              {
-                stock_quantity: res[i].stock_quantity
-              },
-              {
-                item_id: answer.productId
+         }else {
+           console.log("Placing your order...\n");
+           currentStock -= quantityWanted;
+           connection.query(
+              "UPDATE products SET ? WHERE ?",
+              [
+                {
+                  stock_quantity: currentStock
+                },
+                {
+                  item_id: answer.productId
+                }
+              ],
+              function(error) {
+                if (error) throw err;
               }
-            ],
-            function(error) {
-              if (error) throw err;
-            }
 
-          ); 
-          console.log("Order placed!");
-          console.log("Order total: $" + (res[i].price * answer.quantityOfItem) );
-              return;
-              //displayProducts();
-       }
+            ); 
+            console.log("Order placed!");
+            console.log("Order total: $" +  parseFloat(productCost * quantityWanted).toFixed(2) );
+                return;
+                //displayProducts();
+         }
         }
 
-//         let currentStock = product.filter((product) => {
-//     return product.stock_quantity && product.price;
-// })
-
-
-       // var currentStock = res.stock_quantity;
-       // var productCost = res.price;
-       // var quantityWanted = answer.quantityOfItem;
-        // console.log(currentStock);
-        // console.log(productCost);
-        // console.log(quantityWanted);
-
-
-      
-       }) //end query
+      }) //end query
 }); // end inquirer response
 }; // end function makePurchase
