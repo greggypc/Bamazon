@@ -65,21 +65,22 @@ function makePurchase() {
        if (err) throw err;
        //var currentStock = res.stock_quantity;
        //var productCost = res.price;
-       var quantityWanted = answer.quantityOfItem;
-       console.log(res);
+       //var quantityWanted = answer.quantityOfItem;
+       //console.log(res);
+
         for (var i = 0; i < res.length; i++) {
-                    console.log("Position: " + res[i].stock_quantity + " || Song: " + res[i].price);
+                    //console.log("Position: " + res[i].stock_quantity + " || Song: " + res[i].price);
                      if (res[i].stock_quantity < answer.quantityOfItem) {
           console.log("Insufficient quantity! Choose another item?")
           displayProducts();
        }else {
          console.log("Placing your order...\n");
-         currentStock-=quantityWanted;
+         res[i].stock_quantity -= answer.quantityOfItem;
          connection.query(
             "UPDATE products SET ? WHERE ?",
             [
               {
-                stock_quantity: currentStock
+                stock_quantity: res[i].stock_quantity
               },
               {
                 item_id: answer.productId
@@ -91,7 +92,7 @@ function makePurchase() {
 
           ); 
           console.log("Order placed!");
-          console.log("Order total: $" + (productCost * quantityWanted) );
+          console.log("Order total: $" + (res[i].price * answer.quantityOfItem) );
               return;
               //displayProducts();
        }
@@ -105,9 +106,9 @@ function makePurchase() {
        // var currentStock = res.stock_quantity;
        // var productCost = res.price;
        // var quantityWanted = answer.quantityOfItem;
-        console.log(currentStock);
-        console.log(productCost);
-        console.log(quantityWanted);
+        // console.log(currentStock);
+        // console.log(productCost);
+        // console.log(quantityWanted);
 
 
       
