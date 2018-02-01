@@ -1,5 +1,6 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
+require("console.table");
 
 // create the connection information for the sql database
 var connection = mysql.createConnection({
@@ -23,31 +24,17 @@ connection.connect(function(err) {
 
 // function displays product to purchase
 function displayProducts() {
-  connection.query("SELECT * FROM products", function (err, res) {
+  connection.query("SELECT item_id, product_name, price FROM products", function (err, res) {
   if (err) throw err;
-  for (var i = 0; i < res.length; i++) {
-    console.log(res[i].item_id + "  " + res[i].product_name + "  " + "$" + parseFloat(res[i].price).toFixed(2) );
-  }
-    makePurchase();
+  console.table(res);
+  
+  makePurchase();
   }) 
 }
 
-// function displays product to purchase
-// function displayProducts() {
-//   connection.query("SELECT * FROM products", function (err, res) {
-//   if (err) throw err;
-//   //console.log(res);
-
-//   var productList = res.map((prod) => prod);
-//   //for (var i = 0; i < res.length; i++) {
-//     console.log(productList.item_id + "  " + productList.product_name + "  " + "$" + parseFloat(productList.price).toFixed(2) );
-//   //}
-//     makePurchase();
-//   }) 
-// }
-
 // function lets user choose product and quantity for purchase
 function makePurchase() {
+  console.log("\n");
   inquirer
     .prompt([
       {
@@ -115,8 +102,8 @@ function makePurchase() {
             ); 
             console.log("Order placed!");
             console.log("Order total: $" +  parseFloat(productCost * quantityWanted).toFixed(2) );
-                return;
-                //displayProducts();
+                //return;
+                displayProducts();
          }
         }
 
