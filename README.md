@@ -1,7 +1,5 @@
 # Bamazon
 
-# Bamazon
-
 ## Description
 
 This application implements a simple command line based storefront using the npm [inquirer](https://www.npmjs.com/package/inquirer) package and the MySQL database backend together with the npm [mysql](https://www.npmjs.com/package/mysql) package and presents attractive table data via [console.table](https://www.npmjs.com/package/console.table). The application presents two interfaces: **Customer** and **Manager**.
@@ -46,4 +44,3 @@ To run the manager interface please follow the steps below:
 	npm install
 	node bamazonManager.js
 
-### Bamazon Demo
