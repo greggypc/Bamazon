@@ -77,6 +77,7 @@ function viewAllProducts() {
   }) 
 }
 
+// function displays all products with under 200 units in stock
 function viewLowInventory() {
   connection.query("SELECT * FROM products WHERE stock_quantity <= 200", function (err, res) {
   if (err) throw err;
@@ -87,6 +88,7 @@ function viewLowInventory() {
   }) 
 }
 
+// function add to chosen product's inventory
 function addInventory() {
   connection.query("SELECT * FROM products", function (err, res) {
   if (err) throw err;
@@ -109,10 +111,12 @@ function addInventory() {
       var qty = parseInt(answer.increaseBy);
       var item = answer.addStock -1;
       var current = parseInt(res[item].stock_quantity);
+      var increase = current + qty;
+      console.log(increase);
       connection.query(
               "UPDATE products SET ? WHERE ?",
               [
-                {stock_quantity: current + qty},
+                {stock_quantity: increase},
                 {item_id: answer.item}
               ],
               function(error) {
