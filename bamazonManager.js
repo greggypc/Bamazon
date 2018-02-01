@@ -34,6 +34,7 @@ var managerCommands = function() {
         "View low inventory",
         "Add to inventory",
         "Add new product",
+        "Quit",
       ]
     })
     .then(function(answer) {
@@ -52,6 +53,10 @@ var managerCommands = function() {
 
         case "Add new product":
           addNewProduct();
+          break;
+
+         case "Quit":
+          quit();
           break;
 
        default:
@@ -98,55 +103,77 @@ function addInventory() {
         name: "increaseBy",
         type: "input",
         message: "Increase stock by how much?",
-      },
+      }
     ])
     .then(function(answer) {
-      // var addStock = parseInt(answer.addStock);
-      // var increaseBy = parseInt(answer.increaseBy);
-      // var newStock = 0;
-      // var productName;
-      // var currentStock;
-      var newStock = currentStock + increaseBy;
-
-        var query = "SELECT stock_quantity, product_name FROM products WHERE ?";
-        connection.query(query, { item_id: addStock }, function(err, res) {
-         
-      //does the item_id exist?
-       if (!res[0]) {
-        console.log("\nProduct does not exist - choose another:\n" + "========================================\n");
-        addInventory();
-        return;
-      };
-          currentStock = parseInt(res[0].stock_quantity);
-          newStock = currentStock + increaseBy;
-          console.log(newStock);
-          productName = res[0].product_name;
-           console.log(productName);
-        });
-
-          connection.query(
+      var qty = parseInt(answer.increaseBy);
+      var item = answer.addStock -1;
+      var current = parseInt(res[item].stock_quantity);
+      connection.query(
               "UPDATE products SET ? WHERE ?",
               [
-                {
-                  stock_quantity: newStock
-                },
-                {
-                  item_id: answer.productId
-                }
+                {stock_quantity: current + qty},
+                {item_id: answer.item}
               ],
               function(error) {
                 if (error) throw err;
               }
-
             ); 
-          console.log("\nInventory for " + productName + " has been updated to " + newStock);
-          managerCommands(); 
+      console.log("\n" + res[item].product_name + "(s) inventory is updated to " + (current + qty) + "\n");
+      
+      managerCommands();
+          
 }); // end inquirer response
-}; // end function addInventory
+}); 
+} // end function addInventory
+
 
 function addNewProduct() {
-  connection.query("SELECT * FROM products", function (err, res) {
-  if (err) throw err;
-  
-  }) 
-}
+     console.log("\n======================ADD NEW INVENTORY=======================\n");
+     inquirer
+    .prompt([
+    {
+      name: "newProduct",
+      type: "input",
+      message: "Name of new product?"
+    },
+    {
+      name: "qty",
+      type: "input",
+      message: "What quantity should be added to inventory"
+    },
+    {
+      name: "dept",
+      type: "rawlist",
+      message: "Which department:",
+      choices: ["Sports & Outdoors", "Home Improvement", "Electronics"]
+    },
+    {
+      name: "price",
+      type: "input",
+      message: "Price?"
+    }
+    ])
+    .then(function(answer) {
+      var insert = "INSERT INTO products SET ?, ?, ?, ?"
+      connection.query(insert,
+        [
+          {product_name: answer.newProduct},
+          {stock_quantity: answer.qty},
+          {department_name: answer.dept},
+          {price: answer.price}
+        ],
+      function(err, res){
+        if (err) throw err;
+        console.log(answer.newProduct + "(s) have been added to inventory");
+        managerCommands();
+      });
+
+    });
+};
+
+
+function quit() {
+   console.log("\nThank you. Come Again.");
+   connection.end();
+};

@@ -87,12 +87,8 @@ function makePurchase() {
            connection.query(
               "UPDATE products SET ? WHERE ?",
               [
-                {
-                  stock_quantity: currentStock
-                },
-                {
-                  item_id: answer.productId
-                }
+                {stock_quantity: currentStock},
+                {item_id: answer.productId}
               ],
               function(error) {
                 if (error) throw err;
@@ -103,7 +99,7 @@ function makePurchase() {
             console.log("Order total: $" +  parseFloat(productCost * quantityWanted).toFixed(2) );
 
             //ask user to continue or end
-            makeAnotherPurchase();
+            buyAgain();
          }
         }
 
@@ -112,7 +108,7 @@ function makePurchase() {
 }; // end function makePurchase
 
 //ask user to continue or end
-function makeAnotherPurchase() {
+function buyAgain() {
   console.log("\n");
   inquirer
     .prompt([
@@ -131,4 +127,4 @@ function makeAnotherPurchase() {
         connection.end();
       }
 }); // end inquirer response
-};
+}; // end function buyAgain
