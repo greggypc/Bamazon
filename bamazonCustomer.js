@@ -26,6 +26,7 @@ connection.connect(function(err) {
 function displayProducts() {
   connection.query("SELECT item_id, product_name, price FROM products", function (err, res) {
   if (err) throw err;
+  console.log("\n");
   console.table(res);
   
   makePurchase();
@@ -34,7 +35,7 @@ function displayProducts() {
 
 // function lets user choose product and quantity for purchase
 function makePurchase() {
-  console.log("\n");
+  //console.log("\n");
   inquirer
     .prompt([
       {
@@ -71,8 +72,6 @@ function makePurchase() {
         displayProducts();
         return;
       }
-       
-       //console.log(res);
 
         for (var i = 0; i < res.length; i++) {
           var currentStock = res[i].stock_quantity;
@@ -102,11 +101,34 @@ function makePurchase() {
             ); 
             console.log("Order placed!");
             console.log("Order total: $" +  parseFloat(productCost * quantityWanted).toFixed(2) );
-                //return;
-                displayProducts();
+
+            //ask user to continue or end
+            makeAnotherPurchase();
          }
         }
 
       }) //end query
 }); // end inquirer response
 }; // end function makePurchase
+
+//ask user to continue or end
+function makeAnotherPurchase() {
+  console.log("\n");
+  inquirer
+    .prompt([
+      {
+        name: "buy",
+        type: "confirm",
+        message: "Make another purchase?",
+      }
+    ])
+    .then(function(answer) {
+      if (answer.buy) {
+        console.log("\nGreat! Choose another product:");
+        displayProducts();
+      } else {
+        console.log("\nThank you. Come Again.");
+        connection.end();
+      }
+}); // end inquirer response
+};
