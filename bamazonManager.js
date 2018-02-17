@@ -49,6 +49,7 @@ var managerCommands = function() {
           break;
         case "Quit":
           quit();
+          break;
       default:
           console.log("not an option");
       }
@@ -99,7 +100,7 @@ function addInventory() {
       var item = answer.addStock -1;
       var current = parseInt(res[item].stock_quantity);
       var increase = current + qty;
-      console.log(increase);
+      //console.log(increase);
       connection.query(
               "UPDATE products SET ? WHERE ?",
               [
@@ -164,6 +165,6 @@ function addNewProduct() {
 
 
 function quit() {
-   console.log("\nThank you. Come Again.");
+   console.log("\nGreat job managing inventory! Bye.");
    connection.end();
 };
