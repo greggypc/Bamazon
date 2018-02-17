@@ -6,11 +6,7 @@ require("console.table");
 var connection = mysql.createConnection({
   host: "localhost",
   port: 3306,
-
-  // Your username
   user: "root",
-
-  // Your password
   password: "",
   database: "bamazon"
 });
@@ -18,7 +14,7 @@ var connection = mysql.createConnection({
 // connect to the mysql server and sql database
 connection.connect(function(err) {
   if (err) throw err;
-  // run the displayProducts function after the connection is made to prompt the user
+  // run the managerCommands function after the connection is made to prompt the user
   managerCommands();
 });
 
@@ -42,26 +38,19 @@ var managerCommands = function() {
         case "View products for sale":
           viewAllProducts();
           break;
-
         case "View low inventory":
           viewLowInventory();
           break;
-
         case "Add to inventory":
           addInventory();
           break;
-
         case "Add new product":
           addNewProduct();
           break;
-
-         case "Quit":
+        case "Quit":
           quit();
-          break;
-
-       default:
+      default:
           console.log("not an option");
-          
       }
     });
 }
@@ -72,7 +61,6 @@ function viewAllProducts() {
   if (err) throw err;
   console.log("\n======================FULL INVENTORY=======================\n");
   console.table(res);
-  
   managerCommands();
   }) 
 }
@@ -84,7 +72,6 @@ function viewLowInventory() {
   console.log("\n===========LOW INVENTORY ITEMS (UNDER 200 UNITS)===========\n");
   console.table(res);
   managerCommands();  
-
   }) 
 }
 
@@ -117,14 +104,13 @@ function addInventory() {
               "UPDATE products SET ? WHERE ?",
               [
                 {stock_quantity: increase},
-                {item_id: answer.item}
+                {item_id: answer.addStock}
               ],
               function(error) {
                 if (error) throw err;
               }
             ); 
       console.log("\n" + res[item].product_name + "(s) inventory is updated to " + (current + qty) + "\n");
-      
       managerCommands();
           
 }); // end inquirer response
