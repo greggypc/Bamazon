@@ -19,6 +19,8 @@ To run the customer interface please follow the steps below:
 	npm install
 	node bamazonCustomer.js
 
+![alt text](..\images\bamazonCustomer.gif "Bamazon Customer")
+
 ### Manager Interace
 
 The manager interface presents a list of four options, as below. 
@@ -44,3 +46,4 @@ To run the manager interface please follow the steps below:
 	npm install
 	node bamazonManager.js
 
+![alt text](..\images\bamazonManager.gif "Bamazon Manager")
