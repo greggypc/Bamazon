@@ -19,7 +19,7 @@ To run the customer interface please follow the steps below:
 	npm install
 	node bamazonCustomer.js
 
-![alt text](..\images\bamazonCustomer.gif "Bamazon Customer")
+![Bamazon Customer gif](.\images\bamazonCustomer.gif)
 
 ### Manager Interace
 
@@ -46,4 +46,4 @@ To run the manager interface please follow the steps below:
 	npm install
 	node bamazonManager.js
 
-![alt text](..\images\bamazonManager.gif "Bamazon Manager")
+![Bamazon Manager gif](.\images\bamazonManager.gif)
