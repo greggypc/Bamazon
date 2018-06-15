@@ -1,9 +1,9 @@
-var mysql = require("mysql");
-var inquirer = require("inquirer");
+const mysql = require("mysql");
+const inquirer = require("inquirer");
 require("console.table");
 
 // create the connection information for the sql database
-var connection = mysql.createConnection({
+const connection = mysql.createConnection({
   host: "localhost",
   port: 3306,
 
@@ -16,7 +16,7 @@ var connection = mysql.createConnection({
 });
 
 // connect to the mysql server and sql database
-connection.connect(function(err) {
+connection.connect(err => {
   if (err) throw err;
   // run the displayProducts function after the connection is made to prompt the user
   displayProducts();
@@ -24,7 +24,7 @@ connection.connect(function(err) {
 
 // function displays product to purchase
 function displayProducts() {
-  connection.query("SELECT item_id, product_name, price FROM products", function (err, res) {
+  connection.query("SELECT item_id, product_name, price FROM products", (err, res) => {
   if (err) throw err;
   console.log("\n");
   console.table(res);
@@ -42,7 +42,7 @@ function makePurchase() {
         name: "productId",
         type: "input",
         message: "What is the ID of the product you'd like to buy?",
-        validate: function(value) {
+        validate(value) {
           if (isNaN(value) === false) {return true;
           } return false;
         }
@@ -51,19 +51,17 @@ function makePurchase() {
         name: "quantityOfItem",
         type: "input",
         message: "How many units would you like?",
-        validate: function(value) {
+        validate(value) {
          if (isNaN(value) === false) {return true;
           } return false;
 
         }
       }
      ])
-    .then(function(answer) {
+    .then(answer => {
 
-      //var itemSelected = answer.productId;
-     // console.log(answer.productId);
-      var query = "SELECT stock_quantity, price FROM products WHERE ?";
-      connection.query(query, { item_id: answer.productId }, function(err, res) {
+      const query = "SELECT stock_quantity, price FROM products WHERE ?";
+      connection.query(query, { item_id: answer.productId }, (err, res) => {
        if (err) throw err;
 
        //does the item_id exist?
@@ -73,10 +71,10 @@ function makePurchase() {
         return;
       }
 
-        for (var i = 0; i < res.length; i++) {
-          var currentStock = res[i].stock_quantity;
-          var productCost = res[i].price;
-          var quantityWanted = answer.quantityOfItem;
+        for (let i = 0; i < res.length; i++) {
+          let currentStock = res[i].stock_quantity;
+          const productCost = res[i].price;
+          const quantityWanted = answer.quantityOfItem;
           
           if (currentStock < quantityWanted) {
           console.log("Insufficient quantity! Choose another item?")
@@ -90,13 +88,13 @@ function makePurchase() {
                 {stock_quantity: currentStock},
                 {item_id: answer.productId}
               ],
-              function(error) {
+              error => {
                 if (error) throw err;
               }
 
             ); 
             console.log("Order placed!");
-            console.log("Order total: $" +  parseFloat(productCost * quantityWanted).toFixed(2) );
+            console.log(`Order total: $${parseFloat(productCost * quantityWanted).toFixed(2)}` );
 
             //ask user to continue or end
             buyAgain();
@@ -105,7 +103,7 @@ function makePurchase() {
 
       }) //end query
 }); // end inquirer response
-}; // end function makePurchase
+}
 
 //ask user to continue or end
 function buyAgain() {
@@ -118,7 +116,7 @@ function buyAgain() {
         message: "Make another purchase?",
       }
     ])
-    .then(function(answer) {
+    .then(answer => {
       if (answer.buy) {
         console.log("\nGreat! Choose another product:");
         displayProducts();
@@ -127,4 +125,4 @@ function buyAgain() {
         connection.end();
       }
 }); // end inquirer response
-}; // end function buyAgain
+}

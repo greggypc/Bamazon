@@ -1,9 +1,9 @@
-var mysql = require("mysql");
-var inquirer = require("inquirer");
+const mysql = require("mysql");
+const inquirer = require("inquirer");
 require("console.table");
 
 // create the connection information for the sql database
-var connection = mysql.createConnection({
+const connection = mysql.createConnection({
   host: "localhost",
   port: 3306,
   user: "root",
@@ -12,17 +12,16 @@ var connection = mysql.createConnection({
 });
 
 // connect to the mysql server and sql database
-connection.connect(function(err) {
+connection.connect(err => {
   if (err) throw err;
   // run the managerCommands function after the connection is made to prompt the user
   managerCommands();
 });
 
-var managerCommands = function() {
+var managerCommands = () => {
   inquirer
     .prompt({
       name: "action",
-
       type: "rawlist",
       message: "What would you like to do?",
       choices: [
@@ -33,7 +32,7 @@ var managerCommands = function() {
         "Quit",
       ]
     })
-    .then(function(answer) {
+    .then(answer => {
       switch (answer.action) {
         case "View products for sale":
           viewAllProducts();
@@ -58,7 +57,7 @@ var managerCommands = function() {
 
 // function displays all available products
 function viewAllProducts() {
-  connection.query("SELECT * FROM products", function (err, res) {
+  connection.query("SELECT * FROM products", (err, res) => {
   if (err) throw err;
   console.log("\n======================FULL INVENTORY=======================\n");
   console.table(res);
@@ -66,9 +65,9 @@ function viewAllProducts() {
   }) 
 }
 
-// function displays all products with under 200 units in stock
+// function displays all products with fewer than 200 units in stock
 function viewLowInventory() {
-  connection.query("SELECT * FROM products WHERE stock_quantity <= 200", function (err, res) {
+  connection.query("SELECT * FROM products WHERE stock_quantity < 200", (err, res) => {
   if (err) throw err;
   console.log("\n===========LOW INVENTORY ITEMS (UNDER 200 UNITS)===========\n");
   console.table(res);
@@ -78,7 +77,7 @@ function viewLowInventory() {
 
 // function add to chosen product's inventory
 function addInventory() {
-  connection.query("SELECT * FROM products", function (err, res) {
+  connection.query("SELECT * FROM products", (err, res) => {
   if (err) throw err;
   console.log("\n======================ADD INVENTORY=======================\n");
   console.table(res);
@@ -95,11 +94,11 @@ function addInventory() {
         message: "Increase stock by how much?",
       }
     ])
-    .then(function(answer) {
-      var qty = parseInt(answer.increaseBy);
-      var item = answer.addStock -1;
-      var current = parseInt(res[item].stock_quantity);
-      var increase = current + qty;
+    .then(answer => {
+      const qty = parseInt(answer.increaseBy);
+      const item = answer.addStock -1;
+      const current = parseInt(res[item].stock_quantity);
+      const increase = current + qty;
       //console.log(increase);
       connection.query(
               "UPDATE products SET ? WHERE ?",
@@ -107,11 +106,11 @@ function addInventory() {
                 {stock_quantity: increase},
                 {item_id: answer.addStock}
               ],
-              function(error) {
+              error => {
                 if (error) throw err;
               }
             ); 
-      console.log("\n" + res[item].product_name + "(s) inventory is updated to " + (current + qty) + "\n");
+      console.log(`\n${res[item].product_name} inventory is updated to ${current + qty}\n`);
       managerCommands();
           
 }); // end inquirer response
@@ -145,8 +144,8 @@ function addNewProduct() {
       message: "Price?"
     }
     ])
-    .then(function(answer) {
-      var insert = "INSERT INTO products SET ?, ?, ?, ?"
+    .then(answer => {
+      const insert = "INSERT INTO products SET ?, ?, ?, ?";
       connection.query(insert,
         [
           {product_name: answer.newProduct},
@@ -154,17 +153,17 @@ function addNewProduct() {
           {department_name: answer.dept},
           {price: answer.price}
         ],
-      function(err, res){
+      (err, res) => {
         if (err) throw err;
-        console.log(answer.newProduct + "(s) have been added to inventory");
+        console.log(`${answer.newProduct}(s) have been added to inventory`);
         managerCommands();
       });
 
     });
-};
+}
 
 
 function quit() {
    console.log("\nGreat job managing inventory! Bye.");
    connection.end();
-};
+}
